@@ -4,7 +4,7 @@ import configuration from "../../configuration";
 import { unauthorizedMenu } from "../menu/schema";
 import { authenticateGoogle } from "../../integration/google/auth";
 
-export default (message: TelegramBot.Message, bot: TelegramBot) => {
+export default async (message: TelegramBot.Message, bot: TelegramBot) => {
   const chatId = message.chat.id;
   const session = Session.getInstance().getSession(chatId);
   const phoneNumber = session.getPhoneNumber();
@@ -15,7 +15,7 @@ export default (message: TelegramBot.Message, bot: TelegramBot) => {
   }
 
   try {
-    authenticateGoogle();
+    await authenticateGoogle();
   } catch (error) {
     if (error instanceof Error) {
       bot.sendMessage(chatId, error.message, { parse_mode: "HTML" });

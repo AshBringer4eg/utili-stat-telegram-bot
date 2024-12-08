@@ -20,16 +20,16 @@ export function init() {
 
   const bot = new TelegramBot(BOT_TOKEN);
 
-  bot.onText(/\/start/, (message) => {
-    if (authMiddleware(message, bot)) startHandler(message, bot);
+  bot.onText(/\/start/, async (message) => {
+    if (await authMiddleware(message, bot)) startHandler(message, bot);
   });
 
-  bot.on('document', (message) => {
-    if (authMiddleware(message, bot)) documentHandler(message, bot);
+  bot.on('document', async (message) => {
+    if (await authMiddleware(message, bot)) documentHandler(message, bot);
   });
 
   bot.on('photo', async (message) => {
-    if (authMiddleware(message, bot)) await photoHandler(message, bot);
+    if (await authMiddleware(message, bot)) await photoHandler(message, bot);
   });
 
   bot.on('contact', (message) => {

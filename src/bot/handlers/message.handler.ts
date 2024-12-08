@@ -3,7 +3,7 @@ import menuInteractionProcessor from "../processor/menu.interaction.processor";
 import { mainMenu } from "../menu/schema";
 import tgSimpleAuthMiddleware from "../middleware/tg.simple.auth.middleware";
 
-export default (msg: TelegramBot.Message, bot: TelegramBot) => {
+export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
@@ -13,7 +13,7 @@ export default (msg: TelegramBot.Message, bot: TelegramBot) => {
 
 
   if (text){
-    if (tgSimpleAuthMiddleware(msg, bot)) {
+    if (await tgSimpleAuthMiddleware(msg, bot)) {
       menuInteractionProcessor(chatId, text, bot);
     }
   }

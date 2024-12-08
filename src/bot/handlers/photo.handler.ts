@@ -34,7 +34,7 @@ export default async(msg: TelegramBot.Message, bot: TelegramBot) => {
     const fileStream = await axios.get(fileLink, { responseType: 'stream' });
     let auth = null;
     try {
-      auth = authenticateGoogle();
+      auth = await authenticateGoogle();
     } catch (error) {
       if (error instanceof Error) {
         return bot.sendMessage(chatId, error.message, { parse_mode: "HTML" });
