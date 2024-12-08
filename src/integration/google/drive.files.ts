@@ -1,10 +1,11 @@
 import { google } from "googleapis";
 import { OAuth2Client } from 'google-auth-library';
 import { Readable } from "stream";
+import configuration from "../../configuration";
 
 export async function uploadToGoogleDrive(auth: OAuth2Client, fileStream: Readable, fileName: string) : Promise<{ fileId: string, fileUrl: string }> {
   const drive = google.drive({ version: 'v3', auth });
-  const fileMetadata = { name: fileName, parents: ['1Sy6y39jf_gePCJPgv-nfrGPJhRAm8TAQ'] };
+  const fileMetadata = { name: fileName, parents: [configuration.api.googleStorageFolderId] };
 
   const media = { mimeType: 'application/octet-stream', body: fileStream };
 
