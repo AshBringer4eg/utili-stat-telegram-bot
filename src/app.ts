@@ -34,6 +34,7 @@ app.listen(port, async () => {
     TODO: RETAKE PHOTO
     TODO: CONFIRM NUMBER VALUE
     TODO: ADD SESSION ONVERVIEW BUTTON
+    TODO: MANAGE ERRORS AFTER ADDING TO SHEET
   */
 
   const bot = init();

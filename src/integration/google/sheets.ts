@@ -4,6 +4,7 @@ import { getLocaleButton, formatDate } from '../../utils/locale.utils';
 import { MeasurementSessionElement } from '../../bot/session';
 import moment from 'moment';
 import configuration from '../../configuration';
+import mvc from '../../utils/measurements.values.convertor';
 
 // Your spreadsheet ID
 const SPREADSHEET_ID = configuration.api.googleSheetStorageId;
@@ -49,7 +50,7 @@ export async function addMeasurementRow(activeMeasurement: MeasurementSessionEle
                 moment(activeMeasurement.date, 'YY.MM.DD').format('DD.MM.YYYY'),
                 localizedMeasurementType,
                 `=HYPERLINK("${activeMeasurement.fileUrl}";${activeMeasurement.value})`,
-                `=IF(C${newRowNumber}<>"";B${newRowNumber}&". Різниця "&TEXT(A${foundLineNumber}; "dd.mm.yyyy")&"->"&TEXT(A${newRowNumber}; "dd.mm.yyyy")&" = "&TRUNC(C${newRowNumber}-C${foundLineNumber};3)&" ###";"")`,
+                `=IF(C${newRowNumber}<>"";B${newRowNumber}&". Різниця "&TEXT(A${foundLineNumber}; "dd.mm.yyyy")&"->"&TEXT(A${newRowNumber}; "dd.mm.yyyy")&" = "&TRUNC(C${newRowNumber}-C${foundLineNumber};3)&" ${mvc(activeMeasurement.type)}";"")`,
               ], //
             ],
           },

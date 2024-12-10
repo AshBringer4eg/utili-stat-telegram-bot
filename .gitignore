@@ -3,4 +3,5 @@
 .env
 token/*
 !token/.gitkeep
+session.json
 
