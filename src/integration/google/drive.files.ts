@@ -5,6 +5,9 @@ import configuration from "../../configuration";
 
 export async function uploadToGoogleDrive(auth: OAuth2Client, fileStream: Readable, fileName: string) : Promise<{ fileId: string, fileUrl: string }> {
   const drive = google.drive({ version: 'v3', auth });
+  if (!configuration.api.googleStorageFolderId){
+    throw new Error("No GOOGLE_STORAGE_FOLDER_ID has been given in the .env file");
+  }
   const fileMetadata = { name: fileName, parents: [configuration.api.googleStorageFolderId] };
 
   const media = { mimeType: 'application/octet-stream', body: fileStream };

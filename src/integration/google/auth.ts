@@ -36,7 +36,10 @@ export async function authenticateGoogle() {
   } else {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: ['https://www.googleapis.com/auth/drive.file'],
+      scope: [
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/spreadsheets',
+      ],
       prompt: 'consent',
     });
 

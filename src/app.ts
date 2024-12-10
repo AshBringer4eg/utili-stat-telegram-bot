@@ -4,6 +4,7 @@ import { init } from './bot';
 import express, { Request, Response } from 'express';
 import { handleCallback } from './integration/google/auth';
 import chalk from 'chalk';
+import { Session } from './bot/session';
 
 
 const app = express();
@@ -26,12 +27,16 @@ app.get('/oauth2callback', (req: Request, res: Response) => {
 });
 
 // Start the server
-app.listen(port, () => {
+app.listen(port, async () => {
+  await Session.loadSessionFromFile();
+  // await test();
+  /*
+    TODO: RETAKE PHOTO
+    TODO: CONFIRM NUMBER VALUE
+    TODO: ADD SESSION ONVERVIEW BUTTON
+  */
+
   const bot = init();
-
-  // await runMigrations();
-
-  // dbmanager.sync();
   bot.startPolling();
   console.log(chalk.green(`Server running at http://localhost:${port}`));
 });

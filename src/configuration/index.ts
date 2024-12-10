@@ -5,7 +5,9 @@ export type ApplicationConfiguration = {
   api: {
     googleTokenPath: string;
     googleOauthCallbackUrl: string;
-    googleStorageFolderId: string;
+    googleStorageFolderId?: string;
+    googleSheetStorageId?: string;
+    googleSheetStorageSheetName?: string;
   };
   root: string;
   allowedPhones: string[];
@@ -18,7 +20,9 @@ const configuration: ApplicationConfiguration = {
   api: {
     googleTokenPath: './token/google.json',
     googleOauthCallbackUrl: process.env.GOOG_API_CALLBACK || 'http://localhost:10000/oauth2callback',
-    googleStorageFolderId: process.env.GOOG_API_STORAGE_FOLDER_ID || '1Sy6y39jf_gePCJPgv-nfrGPJhRAm8TAQ',
+    googleStorageFolderId: process.env.GOOG_API_STORAGE_FOLDER_ID,
+    googleSheetStorageId: process.env.GOOGLE_API_SHEET_STORAGE_ID,
+    googleSheetStorageSheetName: process.env.GOOGLE_API_SHEET_STORAGE_SHEET_NAME,
   },
   root: path.resolve(process.cwd()),
   allowedPhones: JSON.parse(process.env.ALLOWED_PHONES || '[]'),

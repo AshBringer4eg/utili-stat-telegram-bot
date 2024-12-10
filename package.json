@@ -25,12 +25,15 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "googleapis": "^144.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
     "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/express": "^5.0.0",
+    "@types/lodash": "^4.17.13",
     "@types/node": "^20.17.9",
     "@types/node-telegram-bot-api": "^0.64.7",
     "eslint": "^8.57.1",

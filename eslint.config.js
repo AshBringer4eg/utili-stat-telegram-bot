@@ -15,6 +15,7 @@ export default [
       "brace-style": ["error", "1tbs", { "allowSingleLine": false }],
       'space-infix-ops': ["error", { "int32Hint": true }],
       'semi': 'error',
+      'no-case-declarations': "off",
       'no-unused-vars': 'error',
       'object-curly-spacing': [2, 'always'], // Enforce consistent spacing inside braces
       'indent': [2, 2, { 'SwitchCase': 1 }], // Enforce consistent indentation
