@@ -31,10 +31,10 @@ app.listen(port, async () => {
   await Session.loadSessionFromFile();
   // await test();
   /*
-    TODO: RETAKE PHOTO
-    TODO: CONFIRM NUMBER VALUE
-    TODO: ADD SESSION ONVERVIEW BUTTON
-    TODO: MANAGE ERRORS AFTER ADDING TO SHEET
+    TODO RETAKE PHOTO
+    TODO CONFIRM NUMBER VALUE
+    TODO ADD SESSION ONVERVIEW BUTTON
+    TODO MANAGE ERRORS AFTER ADDING TO SHEET
   */
 
   const bot = init();

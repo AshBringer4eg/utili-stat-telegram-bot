@@ -1,9 +1,8 @@
 import TelegramBot, { SendMessageOptions } from "node-telegram-bot-api";
 import { Session } from "../session";
-import { cancelMenu, getSelectMeasurementMenu } from "../menu/schema";
+import { cancelMenu, getSelectMeasurementMenu } from "../menu/keyboard.schema";
 import axios from "axios";
-import { uploadToGoogleDrive } from "../../integration/google/drive.files";
-import { authenticateGoogle } from "../../integration/google/auth";
+import { makePhotoVisibleByLink, uploadToGoogleDrive } from "../../integration/google/drive.files";
 import { Readable } from "stream";
 import { formatDate, getLocaleButton } from "../../utils/locale.utils";
 
@@ -30,24 +29,16 @@ export default async(msg: TelegramBot.Message, bot: TelegramBot) => {
     const fileLink = await bot.getFileLink(fileTgId);
 
     const fileStream = await axios.get(fileLink, { responseType: 'stream' });
-    let auth = null;
-    try {
-      auth = await authenticateGoogle();
-    } catch (error) {
-      if (error instanceof Error) {
-        return bot.sendMessage(chatId, `❌ ${error.message}`, cancelMenu);
-      } else {
-        return bot.sendMessage(chatId, '❌ An unknown error occurred.');
-      }
-    }
 
     const date = formatDate(new Date());
     const fileName = `${date} - ${getLocaleButton(activeMeasurement.type)}.${fileLink.split('.').pop()}`;
     const readableStream = Readable.from(fileStream.data);
-    const { fileId, fileUrl } = await uploadToGoogleDrive(auth, readableStream, fileName);
+    const { fileId, fileUrl } = await uploadToGoogleDrive(readableStream, fileName);
+    await makePhotoVisibleByLink(fileId);
 
     activeMeasurement.fileGdId = fileId;
     activeMeasurement.fileUrl = fileUrl;
+    activeMeasurement.directPreviewUrl = `https://drive.google.com/uc?id=${fileId}`;
     activeMeasurement.date = date;
 
     await bot.sendMessage(chatId, `✅ File uploaded to Google Drive successfully! File details: <a href="${activeMeasurement.fileUrl}">${activeMeasurement.fileGdId}</a>`, Object.assign({}, cancelMenu, { parse_mode: 'HTML' }) as SendMessageOptions);

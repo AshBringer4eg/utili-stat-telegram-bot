@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import configuration from "../../configuration";
 import { Session } from "../session";
-import { mainMenu, unauthorizedMenu } from "../menu/schema";
+import { mainMenu, unauthorizedMenu } from "../menu/keyboard.schema";
 
 export default (chatId: number, phoneNumber: string, bot: TelegramBot) => {
   const session = Session.getInstance().getSession(chatId);

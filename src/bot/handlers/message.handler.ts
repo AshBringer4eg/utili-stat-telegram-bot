@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import menuInteractionProcessor from "../processor/menu.interaction.processor";
-import { cancelMenu, getSelectMeasurementMenu, mainMenu } from "../menu/schema";
+import { cancelMenu, getSelectMeasurementMenu, mainMenu } from "../menu/keyboard.schema";
 import tgSimpleAuthMiddleware from "../middleware/tg.simple.auth.middleware";
 import { Session } from "../session";
 import { addMeasurementRow } from "../../integration/google/sheets";
@@ -16,7 +16,7 @@ export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
   const activeMeasurement = session.getActiveMesurement();
   if (text){
     if (await tgSimpleAuthMiddleware(msg, bot)) {
-      menuInteractionProcessor(chatId, text, bot);
+      await menuInteractionProcessor(chatId, text, bot);
     }
     if (activeMeasurement && activeMeasurement.fileGdId) {
       const number = Number(text);
@@ -36,8 +36,8 @@ export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
         }
         bot.sendMessage(
           chatId,
-          `✅ Your data stored successfully. ${session.hasEmptyMeasurements() ? 'You have to make another measurement' : ''}`,
-          session.hasEmptyMeasurements() ? getSelectMeasurementMenu(session) : mainMenu
+          `✅ Your data stored successfully. ${session.hasNonFinalizedMeasurements() ? 'You have to make another measurement' : ''}`,
+          session.hasNonFinalizedMeasurements() ? getSelectMeasurementMenu(session) : mainMenu
         );
       }
     }

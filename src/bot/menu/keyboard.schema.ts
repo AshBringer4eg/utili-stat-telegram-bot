@@ -1,25 +1,5 @@
 import { SessionElement } from "../session";
-
-/* eslint-disable no-unused-vars */
-export enum ACTIONS {
-  SHARE_CONTACTS = '📞 Share Contacts',
-
-  START_MEASUREMENT_SESSION = '📏 Open Measurement Session',
-
-  LOGOUT="🚪 Logout",
-  BACK_TO_MAIN_MENU = '🏠 Back to main menu 🏠',
-  CLOSE_MEASUREMENT_SESSION = '✅ Close Measurement session ✅',
-  FAST_MEASUREMENT_SESSION_CLOSE = '✅ End current Measurement session ✅',
-  CONFIRM_CLOSE_MEASUREMENT_SESSION = '👍 I\'m sure I want to close Measurement session',
-
-  HOT_WATER = '🔥 Hot Water',
-  COLD_WATER = '❄️ Cold Water',
-  ELECTRICITY = '⚡ Electricity',
-  HEAT_GJ = '🌡️ Heat (GJ)',
-  HEAT_M3 = '🌡️ Heat (m3)',
-  HEAT_SD = '🌡️Heat (Sd)',
-}
-
+import { ACTIONS } from "./menu.type";
 
 export const unauthorizedMenu = {
   reply_markup: {
@@ -83,8 +63,12 @@ export const getSelectMeasurementMenu = (session: SessionElement) => {
 
   const keyboard = statSelectionMenu.reply_markup.keyboard;
 
-  if (session.hasEmptyMeasurements()) {
+  if (session.hasNonFinalizedMeasurements()) {
     keyboard[0].push({ text: ACTIONS.BACK_TO_MAIN_MENU });
+  }
+
+  if (session.hasFinalizedMeasurements()) {
+    keyboard[0].push({ text: ACTIONS.SESSION_OVERVIEW });
   }
 
   let buttonsAdded = 0;

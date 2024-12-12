@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ACTIONS } from '../bot/menu/schema';
+import { ACTIONS } from '../bot/menu/menu.type';
 export function getLocaleButton(button: string | undefined): string {
   if (!button) {
     return 'Невідома';

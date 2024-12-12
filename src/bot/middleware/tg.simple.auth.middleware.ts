@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Session } from "../session";
 import configuration from "../../configuration";
-import { unauthorizedMenu } from "../menu/schema";
+import { unauthorizedMenu } from "../menu/keyboard.schema";
 import { authenticateGoogle } from "../../integration/google/auth";
 
 export default async (message: TelegramBot.Message, bot: TelegramBot) => {

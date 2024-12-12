@@ -1,14 +1,17 @@
-import { ACTIONS } from "../menu/schema";
+
 import _ from 'lodash';
 import fs from 'fs';
 import configuration from "../../configuration";
+import { getSheetData } from "../../integration/google/sheets";
+import { ACTIONS } from '../menu/menu.type';
 
 export type MeasurementSession = { [key: string]: MeasurementSessionElement }
-
+export type OverviewElement = { google: { date: string, type: string, value: string }, measurement: MeasurementSessionElement };
 export type MeasurementSessionElement = {
   type: ACTIONS;
   active: boolean;
   fileUrl?: string,
+  directPreviewUrl?: string,
   fileTgId?: string,
   fileGdId?: string,
   sheetRowNumber?: number,
@@ -130,11 +133,40 @@ export class SessionElement {
     }
   }
 
-  public hasEmptyMeasurements(): boolean {
+  public hasNonFinalizedMeasurements(): boolean {
     const measurementSession = this.getMeasurementSession();
     for (const key in measurementSession) {
       if (!measurementSession[key].finalized) return true;
     }
     return false;
+  }
+
+  public hasFinalizedMeasurements(): boolean {
+    const measurementSession = this.getMeasurementSession();
+    for (const key in measurementSession) {
+      if (measurementSession[key].finalized) return true;
+    }
+    return false;
+  }
+
+  public async getOverview(): Promise<OverviewElement[]> {
+    const values = await getSheetData('FORMATTED_VALUE');
+
+    const result: OverviewElement[] = [];
+    for (const key in this.measurementSession) {
+      const measurement = this.measurementSession[key];
+      if (measurement.finalized && measurement.sheetRowNumber) {
+        const gdDataRow = values[measurement.sheetRowNumber - 1];
+        if (gdDataRow) {
+          result.push({ google: {
+            date: gdDataRow[0],
+            type: gdDataRow[1],
+            value: gdDataRow[2],
+          }, measurement });
+        }
+      }
+    }
+
+    return result;
   }
 }

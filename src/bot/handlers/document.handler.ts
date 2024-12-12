@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { mainMenu } from "../menu/schema";
+import { mainMenu } from "../menu/keyboard.schema";
 
 export default (msg: TelegramBot.Message, bot: TelegramBot) => {
   const chatId = msg.chat.id;

@@ -1,9 +1,10 @@
 import { google } from "googleapis";
-import { OAuth2Client } from 'google-auth-library';
 import { Readable } from "stream";
 import configuration from "../../configuration";
+import { authenticateGoogle } from "./auth";
 
-export async function uploadToGoogleDrive(auth: OAuth2Client, fileStream: Readable, fileName: string) : Promise<{ fileId: string, fileUrl: string }> {
+export async function uploadToGoogleDrive(fileStream: Readable, fileName: string) : Promise<{ fileId: string, fileUrl: string }> {
+  const auth = await authenticateGoogle();
   const drive = google.drive({ version: 'v3', auth });
   if (!configuration.api.googleStorageFolderId){
     throw new Error("No GOOGLE_STORAGE_FOLDER_ID has been given in the .env file");
@@ -27,4 +28,16 @@ export async function uploadToGoogleDrive(auth: OAuth2Client, fileStream: Readab
 
   // Return the file ID
   return { fileId, fileUrl };
+}
+
+export async function makePhotoVisibleByLink(fileId: string) {
+  const auth = await authenticateGoogle();
+  const drive = google.drive({ version: 'v3', auth });
+  await drive.permissions.create({
+    fileId,
+    requestBody: {
+      role: 'reader',
+      type: 'anyone',
+    },
+  });
 }

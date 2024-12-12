@@ -1,4 +1,4 @@
-import { ACTIONS } from "../bot/menu/schema";
+import { ACTIONS } from "../bot/menu/menu.type";
 
 export default (measurement: ACTIONS) => {
   switch (measurement) {

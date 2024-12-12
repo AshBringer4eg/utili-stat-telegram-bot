@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Session } from "../session";
 import tgSimplePhoneAuthProcessor from "../processor/tg.simple.phone.auth.processor";
-import { unauthorizedMenu } from "../menu/schema";
+import { unauthorizedMenu } from "../menu/keyboard.schema";
 
 export default (msg: TelegramBot.Message, bot: TelegramBot) => {
   const chatId = msg.chat.id;
