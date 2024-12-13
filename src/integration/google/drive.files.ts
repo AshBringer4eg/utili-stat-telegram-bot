@@ -41,3 +41,17 @@ export async function makePhotoVisibleByLink(fileId: string) {
     },
   });
 }
+
+export const deleteFile = async (fileId: string, silent?: boolean) => {
+  try {
+    // Authenticate with the Google API
+    const auth = await authenticateGoogle();
+    const drive = google.drive({ version: 'v3', auth });
+
+    // Call the delete method
+    await drive.files.delete({ fileId });
+  } catch (error) {
+    if (silent) return;
+    throw new Error(`Error deleting the file: ${error}`);
+  }
+};

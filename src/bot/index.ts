@@ -8,6 +8,7 @@ import photoHandler from './handlers/photo.handler';
 import contactHandler from './handlers/contact.handler';
 import messageHandler from './handlers/message.handler';
 import authMiddleware from './middleware/tg.simple.auth.middleware';
+import callbackHandler from './handlers/callback.handler';
 
 // Replace with your bot token from BotFather
 const BOT_TOKEN = process.env.TG_KEY;
@@ -26,6 +27,10 @@ export function init() {
 
   bot.on('document', async (message) => {
     if (await authMiddleware(message, bot)) documentHandler(message, bot);
+  });
+
+  bot.on('callback_query', async (message) => {
+    if (await authMiddleware(message, bot)) callbackHandler(message, bot);
   });
 
   bot.on('photo', async (message) => {

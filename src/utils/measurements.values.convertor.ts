@@ -1,6 +1,6 @@
 import { ACTIONS } from "../bot/menu/menu.type";
 
-export default (measurement: ACTIONS) => {
+export const valueToReadableUnit = (measurement: ACTIONS) => {
   switch (measurement) {
     case ACTIONS.HOT_WATER:
     case ACTIONS.COLD_WATER:
@@ -15,4 +15,8 @@ export default (measurement: ACTIONS) => {
     default:
       return '###';
   }
+};
+
+export const valueToReadableString = (value: number | string, type: ACTIONS) => {
+  return `${value} ${valueToReadableUnit(type)}`;
 };

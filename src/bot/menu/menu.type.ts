@@ -10,6 +10,9 @@ export enum ACTIONS {
   FAST_MEASUREMENT_SESSION_CLOSE = '✅ End current Measurement session',
   CONFIRM_CLOSE_MEASUREMENT_SESSION = '👍 I\'m sure I want to close Measurement session',
   SESSION_OVERVIEW = '📊 Session overview',
+  CANCEL_MEASUREMENT_ELEMENT_EDIT="🚫 Cancel editing",
+  CANCEL_MEASUREMENT_ELEMENT_ADD="🚫 Cancel adding",
+  CONFIRM_DELETE_MEASUREMENT="👍 I'm sure I want to delete measurement",
 
   HOT_WATER = '🔥 Hot Water',
   COLD_WATER = '❄️ Cold Water',
@@ -25,10 +28,26 @@ export enum INLINE_ACTIONS {
   REMOVE_MEASURMENT = "🗑️ Remove",
 }
 
+/**
+ * Callback categories
+ * OVW - Overview
+ *
+ * @export
+ * @enum {number}
+ */
 export enum CB_CATEGORY {
   OVERVIEW = 'OVW',
 }
 
+/**
+ * Callback actions
+ * EV - Edit Value
+ * EP - Edit Photo
+ * RM - Remove Measurement
+ *
+ * @export
+ * @enum {number}
+ */
 export enum CB_ACTION {
   EDIT_VALUE = 'EV',
   EDIT_PHOTO = 'EP',

@@ -22,10 +22,28 @@ export const mainMenu = {
   },
 };
 
-export const cancelMenu = {
+export const closeMeasurementSessionMenu = {
   reply_markup: {
     keyboard: [
       [{ text: ACTIONS.CLOSE_MEASUREMENT_SESSION }],
+    ],
+    resize_keyboard: true,
+  },
+};
+
+export const cancelMeasurementElementEditMenu = {
+  reply_markup: {
+    keyboard: [
+      [{ text: ACTIONS.CANCEL_MEASUREMENT_ELEMENT_EDIT }],
+    ],
+    resize_keyboard: true,
+  },
+};
+
+export const cancelMeasurementElementAddMenu = {
+  reply_markup: {
+    keyboard: [
+      [{ text: ACTIONS.CANCEL_MEASUREMENT_ELEMENT_ADD }],
     ],
     resize_keyboard: true,
   },
@@ -35,6 +53,15 @@ export const fastCloseSessionMenu = {
   reply_markup: {
     keyboard: [
       [{ text: ACTIONS.FAST_MEASUREMENT_SESSION_CLOSE }, { text: ACTIONS.BACK_TO_MAIN_MENU }],
+    ],
+    resize_keyboard: true,
+  },
+};
+
+export const confirmMeasurementDeletionMenu = {
+  reply_markup: {
+    keyboard: [
+      [{ text: ACTIONS.CONFIRM_DELETE_MEASUREMENT }, { text: ACTIONS.CANCEL_MEASUREMENT_ELEMENT_EDIT }],
     ],
     resize_keyboard: true,
   },

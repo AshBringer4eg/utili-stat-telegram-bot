@@ -4,7 +4,8 @@ import { getLocaleButton, formatDate } from '../../utils/locale.utils';
 import { MeasurementSessionElement } from '../../bot/session';
 import moment from 'moment';
 import configuration from '../../configuration';
-import mvc from '../../utils/measurements.values.convertor';
+import { valueToReadableUnit } from '../../utils/measurements.values.convertor';
+import { compareRowToMeasurementData } from './utils';
 
 // Your spreadsheet ID
 const SPREADSHEET_ID = configuration.api.googleSheetStorageId;
@@ -12,6 +13,28 @@ const SHEET_NAME = configuration.api.googleSheetStorageSheetName;
 
 const range = `${SHEET_NAME}!A:Z`;
 
+const getSheetId = async (spreadsheetId: string | undefined) => {
+  if (!SPREADSHEET_ID) {
+    throw new Error('Google Sheets API configuration is missing');
+  }
+  const auth = await authenticateGoogle(); // Your authentication function
+  const sheets = google.sheets({ version: 'v4', auth });
+
+  try {
+    const response = await sheets.spreadsheets.get({
+      spreadsheetId,
+    });
+
+    const sheetInfo = response.data.sheets || [];
+    for (const sheet of sheetInfo) {
+      if (sheet.properties?.title === SHEET_NAME) {
+        return sheet.properties?.sheetId;
+      }
+    }
+  } catch (error) {
+    console.error('Error retrieving sheet IDs:', error);
+  }
+};
 
 export function fromExcelEpochToDate(rawDate: number): Date {
   const excelEpoch = new Date(Date.UTC(1899, 11, 31)); // Excel's epoch is 1899-12-31
@@ -60,13 +83,12 @@ export async function addMeasurementRow(activeMeasurement: MeasurementSessionEle
               [
                 moment(activeMeasurement.date, 'YY.MM.DD').format('DD.MM.YYYY'),
                 localizedMeasurementType,
-                `=HYPERLINK("${activeMeasurement.fileUrl}";${activeMeasurement.value})`,
-                `=IF(C${newRowNumber}<>"";B${newRowNumber}&". Різниця "&TEXT(A${foundLineNumber}; "dd.mm.yyyy")&"->"&TEXT(A${newRowNumber}; "dd.mm.yyyy")&" = "&TRUNC(C${newRowNumber}-C${foundLineNumber};3)&" ${mvc(activeMeasurement.type)}";"")`,
+                `=HYPERLINK("${activeMeasurement.fileUrl}";${String(activeMeasurement.value).replaceAll(/\./g, ',')})`,
+                `=IF(C${newRowNumber}<>"";B${newRowNumber}&". Різниця "&TEXT(A${foundLineNumber}; "dd.mm.yyyy")&"->"&TEXT(A${newRowNumber}; "dd.mm.yyyy")&" = "&TRUNC(C${newRowNumber}-C${foundLineNumber};3)&" ${valueToReadableUnit(activeMeasurement.type)}";"")`,
               ],
             ],
           },
         };
-        activeMeasurement.sheetRowNumber = newRowNumber;
         await appendDataToSheet(request);
         break;
       }
@@ -74,5 +96,51 @@ export async function addMeasurementRow(activeMeasurement: MeasurementSessionEle
   } catch (error) {
     console.error('Error:', error);
     throw error;
+  }
+}
+
+
+
+export async function deleteMeasurementRow(measurement: MeasurementSessionElement, silent?: boolean): Promise<void> {
+  const auth = await authenticateGoogle(); // Your authentication function
+  const sheets = google.sheets({ version: 'v4', auth });
+
+  const sheetId = await getSheetId(SPREADSHEET_ID);
+
+  let deleted = false;
+  const values = await getSheetData('FORMATTED_VALUE');
+  for (let i = values.length - 1; i > 0; i--) {
+    const gdDataRow = values[i];
+    if (compareRowToMeasurementData(gdDataRow, measurement)) {
+      const request = {
+        spreadsheetId: SPREADSHEET_ID,
+        resource: {
+          requests: [
+            {
+              deleteDimension: {
+                range: {
+                  sheetId: sheetId, // ID of the sheet (not name)
+                  dimension: 'ROWS', // Specify we're deleting rows
+                  startIndex: i, // Row to start deletion (0-based index)
+                  endIndex: i + 1, // Row to end deletion (exclusive)
+                },
+              },
+            },
+          ],
+        },
+      };
+      try {
+        await sheets.spreadsheets.batchUpdate(request);
+        deleted = true;
+        return;
+      } catch (error) {
+        if (silent) return;
+        throw new Error(`Error deleting the sheet row: ${error}`);
+      }
+    }
+  }
+  if (!deleted) {
+    if (silent) return;
+    throw new Error(`Error deleting the sheet row: Can't find row to delete/edit in Google Sheets`);
   }
 }

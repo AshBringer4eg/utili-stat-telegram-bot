@@ -2,8 +2,10 @@
 import _ from 'lodash';
 import fs from 'fs';
 import configuration from "../../configuration";
-import { getSheetData } from "../../integration/google/sheets";
+import { getSheetData, deleteMeasurementRow as deleteMeasurementRow } from "../../integration/google/sheets";
 import { ACTIONS } from '../menu/menu.type';
+import { compareRowToMeasurementData } from '../../integration/google/utils';
+import { deleteFile } from '../../integration/google/drive.files';
 
 export type MeasurementSession = { [key: string]: MeasurementSessionElement }
 export type OverviewElement = { google: { date: string, type: string, value: string }, measurement: MeasurementSessionElement };
@@ -14,10 +16,12 @@ export type MeasurementSessionElement = {
   directPreviewUrl?: string,
   fileTgId?: string,
   fileGdId?: string,
-  sheetRowNumber?: number,
   value?: number;
   date?: string,
   finalized?: boolean;
+  waitForValueEdit?: boolean
+  waitForPhotoEdit?: boolean
+  waitForDelete?: boolean
 }
 
 type SessionStorage = { [key: string]: SessionElement }
@@ -102,9 +106,18 @@ export class SessionElement {
     return measurementSession[type];
   }
 
+  public resetAllWaitings(): void {
+    const measurementSession = this.getMeasurementSession();
+    for (const key in measurementSession) {
+      const measurement = measurementSession[key];
+      measurement.waitForPhotoEdit = false;
+      measurement.waitForValueEdit = false;
+      measurement.waitForDelete = false;
+    }
+  }
+
   public resetMeasurementSession(): void {
     this.measurementSession = {};
-    /* CLEAR FILES AND ROWS IN GOOGLE SERVICES */
   }
 
   public setActiveMeasurement(type: ACTIONS): MeasurementSessionElement {
@@ -121,6 +134,18 @@ export class SessionElement {
     const measurementSession = this.getMeasurementSession();
     for (const key in measurementSession) {
       if (measurementSession[key].active) return measurementSession[key];
+    }
+    return undefined;
+  }
+
+  public getAwaitingMesurement(): MeasurementSessionElement | undefined {
+    const measurementSession = this.getMeasurementSession();
+    for (const key in measurementSession) {
+      if (
+        measurementSession[key].waitForPhotoEdit ||
+        measurementSession[key].waitForValueEdit ||
+        measurementSession[key].waitForDelete
+      ) return measurementSession[key];
     }
     return undefined;
   }
@@ -155,9 +180,10 @@ export class SessionElement {
     const result: OverviewElement[] = [];
     for (const key in this.measurementSession) {
       const measurement = this.measurementSession[key];
-      if (measurement.finalized && measurement.sheetRowNumber) {
-        const gdDataRow = values[measurement.sheetRowNumber - 1];
-        if (gdDataRow) {
+      if (!measurement.finalized) continue;
+      for (let i = values.length - 1; i > 0; i--) {
+        const gdDataRow = values[i];
+        if (compareRowToMeasurementData(gdDataRow, measurement)) {
           result.push({ google: {
             date: gdDataRow[0],
             type: gdDataRow[1],
@@ -166,7 +192,17 @@ export class SessionElement {
         }
       }
     }
-
     return result;
+  }
+
+  public async deleteMeasurment(measurement: MeasurementSessionElement | undefined): Promise<void> {
+    if (!measurement) throw new Error('Measurement not found.');
+    if (!measurement.fileGdId) throw new Error('Measurement google file ID not found.');
+    const measurementSession = this.getMeasurementSession();
+    // Delete file
+    await deleteFile(measurement.fileGdId, true);
+    await deleteMeasurementRow(measurement, true);
+    // Delete sheet row
+    measurementSession[measurement.type] = { type: measurement.type, active: false };
   }
 }
