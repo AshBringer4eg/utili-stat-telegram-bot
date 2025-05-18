@@ -10,11 +10,11 @@ export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  if (!text && !msg.photo && !msg.document && !msg.contact){
+  if (!text && !msg.photo && !msg.document && !msg.contact) {
     return bot.sendMessage(chatId, 'Make your selection from menu below', mainMenu);
   }
 
-  if (text){
+  if (text) {
     if (await tgSimpleAuthMiddleware(msg, bot)) {
       const menuHandled = await menuInteractionProcessor(chatId, text, bot);
       if (menuHandled) return;
@@ -24,10 +24,10 @@ export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
     const activeMeasurement = session.getActiveMesurement();
     const awaitingMeasurement = session.getAwaitingMesurement();
 
-    if (activeMeasurement){
+    if (activeMeasurement) {
       if (activeMeasurement && activeMeasurement.fileGdId) {
-        const number = Number(text);
-        if (isNaN(number)){
+        const number = Number(text.replace(/,/g, '.'));
+        if (isNaN(number)) {
           bot.sendMessage(chatId, '✏️ Please enter a valid number for your measurement', closeMeasurementSessionMenu);
         } else {
           activeMeasurement.value = number;
@@ -47,10 +47,10 @@ export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
         }
       }
     }
-    if (awaitingMeasurement){
-      if (awaitingMeasurement.waitForValueEdit){
+    if (awaitingMeasurement) {
+      if (awaitingMeasurement.waitForValueEdit) {
         const number = Number(text);
-        if (isNaN(number)){
+        if (isNaN(number)) {
           bot.sendMessage(chatId, '✏️ Please enter a valid number for your measurement'); // TODO Add menu to cancel edit
         } else {
           const oldValue = awaitingMeasurement.value;
@@ -70,7 +70,7 @@ export default async (msg: TelegramBot.Message, bot: TelegramBot) => {
 
           if (oldValue && awaitingMeasurement.value) {
             bot.sendMessage(chatId, `✅ Value for ${awaitingMeasurement.type} successfully updated from ${valueToReadableString(oldValue, awaitingMeasurement.type)} to ${valueToReadableString(awaitingMeasurement.value, awaitingMeasurement.type)}`, getSelectMeasurementMenu(session));
-          } else if (awaitingMeasurement.value){
+          } else if (awaitingMeasurement.value) {
             bot.sendMessage(chatId, `✅ Value for ${awaitingMeasurement.type} successfully updated to ${valueToReadableString(awaitingMeasurement.value, awaitingMeasurement.type)}`, getSelectMeasurementMenu(session));
           } else {
             // I don't think this can happen
