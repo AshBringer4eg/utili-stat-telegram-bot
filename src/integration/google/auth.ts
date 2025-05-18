@@ -2,7 +2,7 @@ import { google } from "googleapis";
 import configuration from "../../configuration";
 import { getRedisClient, GOOGLE_TOKEN_KEY } from '../../lib/redis';
 
-if (!process.env.GOOG_API_CREDS){
+if (!process.env.GOOG_API_CREDS) {
   throw new Error("No GOOG_API_CREDS has been given in the .env file");
 }
 const credentials = JSON.parse(process.env.GOOG_API_CREDS);
@@ -12,7 +12,7 @@ const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_u
 export async function authenticateGoogle() {
   const redisClient = getRedisClient();
   const tokenString = await redisClient.get(GOOGLE_TOKEN_KEY);
-  
+
   if (tokenString) {
     const token = JSON.parse(tokenString);
     // Check if token has expired

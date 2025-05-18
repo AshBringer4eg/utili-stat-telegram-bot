@@ -16,6 +16,10 @@ app.use(express.json());
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript with Express!');
 });
+// Define a health check route
+app.get('/health', (req: Request, res: Response) => {
+  res.send('I am alive');
+});
 // Define a simple route
 app.get('/oauth2callback', (req: Request, res: Response) => {
   if (!req.query.code) {
