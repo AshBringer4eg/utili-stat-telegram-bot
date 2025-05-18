@@ -1,11 +1,10 @@
 import 'dotenv/config';
 import { init } from './bot';
-
 import express, { Request, Response } from 'express';
 import { handleCallback } from './integration/google/auth';
 import chalk from 'chalk';
 import { Session } from './bot/session';
-
+import { initRedis } from './lib/redis';
 
 const app = express();
 const port = 10000;
@@ -28,6 +27,7 @@ app.get('/oauth2callback', (req: Request, res: Response) => {
 
 // Start the server
 app.listen(port, async () => {
+  await initRedis();
   await Session.loadSessionFromFile();
   // await test();
   /*

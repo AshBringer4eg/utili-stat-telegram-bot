@@ -4,4 +4,6 @@
 token/*
 !token/.gitkeep
 session.json
+.pnpm-store/
+.pnpm-debug.log
 
