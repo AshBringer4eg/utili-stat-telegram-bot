@@ -6,7 +6,7 @@
   "type": "module",
   "engines": {
     "node": ">=23.8.0",
-    "pnpm": "^8.0.0"
+    "pnpm": ">=8.0.0"
   },
   "scripts": {
     "build": "pnpm install",
